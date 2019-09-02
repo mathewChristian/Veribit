@@ -25,13 +25,13 @@ Consists of three components:
 **You will need to clone these 3 repos individually and follow the instructions within each one.**
 
 1. **User registration web interface - **
-(https://github.com/RoyMurphy/veribit-fe)   This is a react application that serves as the frontend for user registration. Registration is initiated by a user email and an authentication key sent from the backend of whichever service is connected, then a token to begin registration is returned. A user is then redirected and may upload an identity document, selfie with the identity document, and fill out fields with any required information for an admin to review.
+(https://github.com/RoyMurphy/Veribit/tree/master/veribit-fe)   This is a react application that serves as the frontend for user registration. Registration is initiated by a user email and an authentication key sent from the backend of whichever service is connected, then a token to begin registration is returned. A user is then redirected and may upload an identity document, selfie with the identity document, and fill out fields with any required information for an admin to review.
 
 2. **Backend server application - **
-(https://github.com/RoyMurphy/veribit-be)   This is the backend, based in nodejs and mongodb. It serves both the admin and end user APIs. It can be customized to fit your application needs, and with a webhook going to the application you are trying to KYC. You can integrate an email provider by registering an account, making the appropriate DNS entries, and pasting in the keys to the application if you would like to send email notifications through this component as well.
+(https://github.com/RoyMurphy/Veribit/tree/master/veribit-be)   This is the backend, based in nodejs and mongodb. It serves both the admin and end user APIs. It can be customized to fit your application needs, and with a webhook going to the application you are trying to KYC. You can integrate an email provider by registering an account, making the appropriate DNS entries, and pasting in the keys to the application if you would like to send email notifications through this component as well.
 
 3. **Admin interface - **
-(https://github.com/RoyMurphy/veribit-admin)  This is the admin panel. It should be configured to aim at the backend, and with an application owner email specified in the configuration.
+(https://github.com/RoyMurphy/Veribit/tree/master/veribit-admin)  This is the admin panel. It should be configured to aim at the backend, and with an application owner email specified in the configuration.
 
 ### Documentation
 
