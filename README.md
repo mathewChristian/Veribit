@@ -1,5 +1,5 @@
 # Veribit
-A Bitcoin SV verification service
+A Bitcoin SV identity & verification service
 
 *This is currently an early Alpha pre-build and is not production ready.
 
