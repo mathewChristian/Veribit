@@ -87,12 +87,6 @@ class TakePhotoContainer extends PureComponent {
                   <img alt="true" src={logo} className="logo"/>
                 </Col>
               </Row>
-              {/* <Row className="validation_logo_area">
-                <Col span={12} className="title_area">
-                  <Row className="row_title"><Col><span  className="logo_title">NO REST</span></Col></Row>
-                  <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
-                </Col>
-              </Row> */}
               <Row  className="validation_title_area">
                 <Col span={12} offset={7}>
                     <span className="validation_choose_title">&ensp;Take&ensp;A&ensp;Picture</span>

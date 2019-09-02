@@ -88,12 +88,6 @@ class SignUpContainer extends PureComponent {
                   <img alt="true" src={logo} className="logo"/>
                 </Col>
               </Row>
-              {/* <Row className="sign_logo_area">
-                <Col span={12} className="title_area">
-                  <Row className="row_title"><Col><span  className="logo_title">NO REST</span></Col></Row>
-                  <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
-                </Col>
-              </Row> */}
               <Row className="email_area">
                 <Col offset={4} span={16}>
                   { this.state.isFocus ?
