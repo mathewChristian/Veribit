@@ -6,6 +6,7 @@ import RoutesContainer from 'containers/RoutesContainer/RoutesContainer';
 import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
 import PageNotFound from 'components/PageNotFound/PageNotFound';
 import SignInContainer from 'containers/SignInContainer/SignInContainer';
+import ChainMediaContainer from 'containers/ChainMediaContainer/ChainMediaContainer';
 
 import 'assets/styles/App.less';
 
@@ -19,6 +20,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/signin/:token" component={SignInContainer}/>
                 <Route path="/signin" exact component={SignInContainer}/>
+                <Route path="/chainMedia" exact component={ChainMediaContainer}/>
                 <Route exact path="/404" component={PageNotFound}/>
                 <PrivateRoute path="/" component={RoutesContainer}/>
               </Switch>
