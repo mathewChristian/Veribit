@@ -15,6 +15,12 @@ export const SELFIE_UPDATE_REQUEST = 'selfie/UPDATE_REQUEST';
 export const SELFIE_UPDATE_REQUEST_SUCCESS = 'selfie/UPDATE_REQUEST_SUCCESS';
 export const GEN_TOKEN_REQUEST = 'genToken/gen_token_REQUEST';
 export const GEN_TOKEN_REQUEST_SUCCESS = 'genToken/gen_token_REQUEST_SUCCESS';
+export const FUND_WALLET_INITIATE_REQUEST =  'fundWalletinitiate/fund_wallet_initiate_REQUEST';
+export const FUND_WALLET_INITIATE_REQUEST_SUCCESS = 'fundWalletinitiate/fund_wallet_initiate_SUCCESS';
+export const PREPARE_UTXOs_REQUEST = 'prepareUTXOs/PREPARE_UTXOs_REQUEST';
+export const PREPARE_UTXOs_SUCCESS = 'prepareUTXOs/PREPARE_UTXOs_SUCCESS';
+export const BROADCASTXN_REQUEST = 'broadCastTXN/PREPARE_UTXOs_REQUEST';
+export const BROADCASTXN_SUCCESS = 'broadCastTXN/PREPARE_UTXOs_SUCCESS';
 /**
  * Action Creators
  */
@@ -29,4 +35,10 @@ export const authActionCreators = {
   updateSelfieSuccess: createPromiseAction(SELFIE_UPDATE_REQUEST_SUCCESS),
   genToken: createPromiseAction(GEN_TOKEN_REQUEST),
   getTokenSuccess: createAction(GEN_TOKEN_REQUEST_SUCCESS),
+  fundWalletInitiate: createAction(FUND_WALLET_INITIATE_REQUEST),
+  fundWalletInitiateSuccess: createAction(FUND_WALLET_INITIATE_REQUEST_SUCCESS),
+  prepareUTXOs: createAction(PREPARE_UTXOs_REQUEST),
+  prepareUTXOsSuccess: createAction(PREPARE_UTXOs_SUCCESS),
+  broadCastTXN: createAction(BROADCASTXN_REQUEST),
+  broadCastTXNSuccess: createAction(BROADCASTXN_SUCCESS),
 };

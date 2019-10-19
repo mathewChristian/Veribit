@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'; 
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Icon, Row, Col, Button, Input, Layout } from 'antd';
@@ -6,6 +6,8 @@ import { connectAuth, authActionCreators } from 'core';
 import { promisify } from '../../utilities';
 import { validateEmail } from '../../services/common';
 import logo from 'assets/img/logo.png';
+
+import MoneyButton from '@moneybutton/react-money-button'
 
 const { Content, Header } = Layout;
 
@@ -25,7 +27,19 @@ class SignInContainer extends PureComponent {
       isFocus: false,
       user: '',
       email: '',
-      isEmailValidate: true
+      isEmailValidate: true,
+      toValue: '1',
+      labelValue: 'Swipe to continue',
+      amountValue: '0.01',
+      currencyValue: 'INR',
+      successMessageValue: 'Success!',
+      opReturn: 'moneybutton.com',
+      clientIdentifierValue: '501af53a1aee66a0a695cc5979710db2',
+      buttonIdValue: '93434523234',
+      buttonDataValue: JSON.stringify({ website: 'www.moneybutton.com', category: 'Awesomeness', description: 'cool platform', owner: 'Money Button' }),
+      typeValue: 'tip',
+      editableValue: false,
+      disabledValue: false
     }
   }
 
@@ -38,6 +52,31 @@ class SignInContainer extends PureComponent {
         })
         .catch(e => console.log(e));
     }
+  }
+
+  onPayment (payment) {
+    if(payment.status === "RECEIVED"){
+      this.showValidationPage()
+    }
+  }
+
+  onError (err) {
+    console.log('Error', err)
+  }
+
+
+  handleOutputsChange = async event => {
+    return this.setState({ outputsValue: event.target.value })
+  }
+
+  forceReloadButton = () => {
+    this.setState({ showButton: false }, () => {
+      setTimeout(() => this.setState({ showButton: true }), 10)
+    })
+  }
+
+  onLoad = () => {
+    console.log('onLoad callback is working')
   }
 
   handleEmail = () => {
@@ -60,7 +99,7 @@ class SignInContainer extends PureComponent {
             .then((user) => {
               this.setState(...this.state, { user: user });
               if (user.approvalStatus === 'NO_SUBMISSION_YET')
-                this.props.history.push('/validation');          
+                this.props.history.push('/validation');
             })
             .catch(e => console.log(e));
           }
@@ -75,22 +114,57 @@ class SignInContainer extends PureComponent {
     }
   }
 
+
   render () {
     var continueButton, emailInput, msg = '';
     emailInput = <Input value={this.state.email} placeholder="Email Address" onClick={this.handleEmail} onChange={this.updateEmailValue} />
-    continueButton = <Button className="continue_btn" onClick={this.showValidationPage}>CONTINUE</Button>
+    continueButton =
+        <MoneyButton
+          successMessage={this.state.successMessageValue}
+          to={this.state.toValue}
+          amount={this.state.amountValue}
+          currency={this.state.currencyValue}
+          editable={this.state.editableValue}
+          label={this.state.labelValue}
+          opReturn={this.state.opReturn}
+          clientIdentifier={this.state.clientIdentifierValue}
+          buttonId={this.state.buttonIdValue}
+          buttonData={this.state.buttonDataValue}
+          type={this.state.typeValue}
+          onPayment={this.onPayment.bind(this)}
+          onError={this.onError.bind(this)}
+          onLoad={this.onLoad.bind(this)}
+          disabled={this.state.disabledValue}
+          />
     if (this.state.user !== '') {
       emailInput = <Input value={this.state.user.email ? this.state.user.email : '' } disabled={true} placeholder="Email Address" onClick={this.handleEmail} />
       switch(this.state.user.approvalStatus) {
         case 'NO_SUBMISSION_YET':
-          continueButton = <Button className="continue_btn" onClick={this.showValidationPage}>CONTINUE</Button>
+          continueButton =
+            <MoneyButton
+              successMessage={this.state.successMessageValue}
+              to={this.state.toValue}
+              amount={this.state.amountValue}
+              currency={this.state.currencyValue}
+              editable={this.state.editableValue}
+              label={this.state.labelValue}
+              opReturn={this.state.opReturn}
+              clientIdentifier={this.state.clientIdentifierValue}
+              buttonId={this.state.buttonIdValue}
+              buttonData={this.state.buttonDataValue}
+              type={this.state.typeValue}
+              onPayment={this.onPayment.bind(this)}
+              onError={this.onError.bind(this)}
+              onLoad={this.onLoad.bind(this)}
+              disabled={this.state.disabledValue}
+            />
         break;
         case 'PENDING':
           continueButton = <Button disabled="true" className="continue_btn">PENDING</Button>
         break;
         case 'APPROVED':
           continueButton = <Button className="continue_btn kyc_complete_btn">KYC COMPLETE</Button>
-          emailInput = <Input className="kyc_complete_input" value={this.state.user.email ? this.state.user.email : '' } onChange={this.updateEmailValue} placeholder="Email Address" onClick={this.handleEmail} suffix={<Icon style={{ fontSize: 16, color: '#3cb878' }} type="check-circle" /> }/> 
+          emailInput = <Input className="kyc_complete_input" value={this.state.user.email ? this.state.user.email : '' } onChange={this.updateEmailValue} placeholder="Email Address" onClick={this.handleEmail} suffix={<Icon style={{ fontSize: 16, color: '#3cb878' }} type="check-circle" /> }/>
           msg = <span className="kyc_complete_msg">User has had a succssful review</span>
         break;
         case 'ACTION_REQUESTED':
@@ -130,7 +204,7 @@ class SignInContainer extends PureComponent {
                 </Col>
               </Row>
               <Row>
-                <Col offset={4} span={16}>
+                <Col offset={5} span={14}>
                   { continueButton }
                 </Col>
               </Row>
@@ -139,7 +213,7 @@ class SignInContainer extends PureComponent {
         </Layout>
       </div>
     );
-  }  
+  }
 }
 
 const mapStateToProps = ({auth}) => ({
