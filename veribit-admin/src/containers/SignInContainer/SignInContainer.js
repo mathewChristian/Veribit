@@ -34,7 +34,7 @@ class SignInContainer extends PureComponent {
     }
   }
 
-  async handleMoneyButtonResonse() {
+  async handleMoneyButtonResponse() {
     try {
       await client.handleAuthorizationResponse();
       const { id: userId } = await client.getIdentity();
@@ -50,7 +50,7 @@ class SignInContainer extends PureComponent {
   async login() {
     if (this.state.haveGrant == true) {
       try {
-        await this.handleMoneyButtonResonse();
+        await this.handleMoneyButtonResponse();
       } catch (error) {
         this.setState(...this.state, { msg: error });
       }
@@ -72,7 +72,7 @@ class SignInContainer extends PureComponent {
   async moneyButtonSignUp(provider) {
     if (this.state.haveGrant == true) {
       try {
-        await this.handleMoneyButtonResonse();
+        await this.handleMoneyButtonResponse();
       } catch (error) {
         this.setState(...this.state, { msg: error });
       }
