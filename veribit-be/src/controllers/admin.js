@@ -1,46 +1,48 @@
-const dateFormat = require('dateformat');
-const crypto = require('crypto');
-const passport = require('passport');
-const config = require('../config');
-const ModelConstants = require('../models/constants');
-const AdminModel = require('../models/admin');
-const UserModel = require('../models/user');
-const AuthModule = require('../modules/auth');
-const UtilsModule = require('../modules/utils');
-const MailService = require('../services/mail.service');
-const EMailTemplateService = require('../services/email.template.service');
+const dateFormat = require("dateformat");
+const crypto = require("crypto");
+const passport = require("passport");
+const config = require("../config");
+const ModelConstants = require("../models/constants");
+const AdminModel = require("../models/admin");
+const UserModel = require("../models/user");
+const AuthModule = require("../modules/auth");
+const UtilsModule = require("../modules/utils");
+const MailService = require("../services/mail.service");
+const EMailTemplateService = require("../services/email.template.service");
 
 /**
  * @function: Admin user signup
  *
  * @method: POST /signup
  *
+ * @param {String|Required} userId
  * @param {String|Required} email
- * @param {String|Required} password
  *
  * @return
  * { "status": 200, "msg": "success" }
  */
 exports.postSignup = async (req, res) => {
+  const userId = req.body.userId;
   const email = String(req.body.email).toLowerCase();
-  const { password } = req.body;
+  const provider = req.body.provider;
+  const password = req.body.userId;
 
   // validation
-  if (!UtilsModule.validateEmail(email)) return res.json({ status: 400, msg: 'Email is not valid !' });
-  if (!password || String(password).length < 4) {
+  if (!UtilsModule.validateEmail(email))
     return res.json({
       status: 400,
-      msg: 'Password must be at least 4 characters long !'
+      msg: "This Email: " + email + " is not valid !"
     });
-  }
 
   try {
-    let user = await AdminModel.findOne({ email });
-    if (user) return res.json({ status: 400, msg: 'User already existing !' });
+    let user = await AdminModel.findOne({ userId });
+    if (user) return res.json({ status: 400, msg: "User already exist !" });
 
     user = new AdminModel({
+      userId,
       email,
       password,
+      provider
     });
     if (email === config.email.masterEmail) {
       user.status = ModelConstants.ADMIN_STATUS_VERIFIED;
@@ -48,17 +50,18 @@ exports.postSignup = async (req, res) => {
       MailService.send(
         config.email.from.general,
         config.email.masterEmail,
-        'Thanks for your registeration',
+        "Thanks for your registeration",
         `Welcome.\n\nYou are receiving this because you sign up.\n\n`
       )
-        .then(result => { // eslint-disable-line
+        .then(result => {
+          // eslint-disable-line
           // console.log(result);
         })
         .catch(err => {
-          console.log('mail sending error: ', err);
+          console.log("mail sending error: ", err);
         });
     } else {
-      const ownerConfirmToken = crypto.randomBytes(32).toString('hex');
+      const ownerConfirmToken = crypto.randomBytes(32).toString("hex");
       user.ownerConfirmToken = ownerConfirmToken;
       user.status = ModelConstants.ADMIN_STATUS_NOT_VERIFIED;
       await user.save();
@@ -66,26 +69,27 @@ exports.postSignup = async (req, res) => {
       MailService.send(
         email,
         config.email.masterEmail,
-        'admin signup',
+        "admin signup",
         `${email} requested admin user.\n\n` +
         `Please go to <a href='${config.baseUrl}/admin/verify/${ownerConfirmToken}'>here</a> to verify.\n\n` +
         `Thanks,\n`
       )
-        .then(result => { // eslint-disable-line
+        .then(result => {
+          // eslint-disable-line
           // console.log(result);
         })
         .catch(err => {
-          console.log('mail sending error: ', err);
+          console.log("mail sending error: ", err);
         });
     }
 
     return res.json({
       status: 200,
-      msg: 'success'
+      msg: "success"
     });
   } catch (error) {
     console.log(error);
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -94,37 +98,47 @@ exports.postSignup = async (req, res) => {
  *
  * @method: POST /login
  *
+ * @param {String|Required} userId
  * @param {String|Required} email
- * @param {String|Required} password
  *
  * @return
  * { "status": 200, "msg": "success", data: { token } }
  */
 exports.postLogin = (req, res, next) => {
+  const userId = req.body.userId;
   const email = String(req.body.email).toLowerCase();
   const { password } = req.body;
 
   // validation
-  if (!UtilsModule.validateEmail(email)) return res.json({ status: 400, msg: 'Email is not valid !' });
-  if (!password || String(password).length < 4) {
-    return res.json({
-      status: 400,
-      msg: 'Password must be at least 4 characters long !'
-    });
-  }
+  if (!UtilsModule.validateEmail(email))
+    return res.json({ status: 400, msg: "Email is not valid !!" });
 
   // do process
-  return passport.authenticate('admin', (err, user, info) => {
-    if (err) return res.json({ status: 400, msg: 'Error occurred !' });
+  return passport.authenticate("admin", (err, user, info) => {
+    if (err) return res.json({ status: 400, msg: "Error occurred !" });
     if (!user) {
       return res.json({
         status: 400,
         msg: info.msg
       });
     }
-    const token = AuthModule.makeAdminLoginToken(user._id, { expiresIn: '7d' });
-    return res.json({ status: 200, msg: 'success', data: { token } });
+
+
+    /*Wian Koch: 2019-08-01:*
+    return passport.authenticate("oauth2", (err, user, info) => {
+      if (err) return res.json({ status: 400, msg: "Error occurred !" });
+      if (!user) {
+        return res.json({
+          status: 400,
+          msg: info.msg
+        });
+      }*/
+
+    const token = AuthModule.makeAdminLoginToken(user._id, { expiresIn: "7d" });
+    return res.json({ status: 200, msg: "success", data: { token } });
   })(req, res, next);
+
+
 };
 
 /**
@@ -146,25 +160,30 @@ exports.postApproveUser = async (req, res) => {
   const approvalStatus = req.body.approvalStatus;
   let approvalDescription = req.body.approvalDescription;
 
-  if (approvalStatus !== 'ACTION_REQUESTED') approvalDescription = undefined;
+  if (approvalStatus !== "ACTION_REQUESTED") approvalDescription = undefined;
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
-  if (!UtilsModule.validateEmail(useremail)) return res.json({ status: 400, msg: 'Invalid useremail !' });
-  if (!approvalStatus || approvalStatus === '') return res.json({ status: 400, msg: 'Empty approvalStatus !' });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
+  if (!UtilsModule.validateEmail(useremail))
+    return res.json({ status: 400, msg: "Invalid useremail !" });
+  if (!approvalStatus || approvalStatus === "")
+    return res.json({ status: 400, msg: "Empty approvalStatus !" });
 
   // logic
   const loggedAdmin = await AuthModule.getAdminFromToken(token);
-  if (!loggedAdmin) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!loggedAdmin)
+    return res.json({ status: 400, msg: "token is not valid !" });
 
   const userRow = await UserModel.findOne({ email: useremail });
-  if (!userRow) return res.json({ status: 400, msg: 'user email is not exsiting !' });
+  if (!userRow)
+    return res.json({ status: 400, msg: "user email is not exsiting !" });
 
   userRow.approvalStatus = approvalStatus;
   userRow.approvalDescription = approvalDescription;
   userRow.adminContact = loggedAdmin.email;
   return userRow.save(err => {
-    if (err) return res.json({ status: 400, msg: 'user save error !' });
-    return res.json({ status: 200, msg: 'success', data: userRow });
+    if (err) return res.json({ status: 400, msg: "user save error !" });
+    return res.json({ status: 200, msg: "success", data: userRow });
   });
 };
 
@@ -183,7 +202,9 @@ exports.postApproveUser = async (req, res) => {
  */
 exports.getSubmissionList = async (req, res) => {
   const token = req.query.token;
-  const useremail = req.query.useremail ? String(req.query.useremail).toLowerCase() : null;
+  const useremail = req.query.useremail
+    ? String(req.query.useremail).toLowerCase()
+    : null;
   const approvalStatus = req.query.approvalStatus;
   let offset = Number(req.query.offset);
   let count = Number(req.query.count);
@@ -192,14 +213,17 @@ exports.getSubmissionList = async (req, res) => {
   if (!count) count = 16;
 
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
 
   // logic
   const loggedAdmin = await AuthModule.getAdminFromToken(token);
-  if (!loggedAdmin) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!loggedAdmin)
+    return res.json({ status: 400, msg: "token is not valid !" });
 
   const cond = approvalStatus ? { approvalStatus } : {};
-  if (useremail && useremail !== '') cond.email = { $regex: `${useremail}`, $options: 'i' };
+  if (useremail && useremail !== "")
+    cond.email = { $regex: `${useremail}`, $options: "i" };
 
   const submissions = await UserModel.find(cond)
     .sort({ updatedAt: 1, approvalStatus: -1 })
@@ -214,14 +238,17 @@ exports.getSubmissionList = async (req, res) => {
     for (let i = 0; i < submissions.length; i++) {
       const item = JSON.parse(JSON.stringify(submissions[i]));
       item.time_diff = curDate - submissions[i].updatedAt;
-      item.dob = dateFormat(item.dob, 'yyyy-mm-dd');
-      item.documentExpireDate = dateFormat(item.documentExpireDate, 'yyyy-mm-dd HH:MM:ss');
+      item.dob = dateFormat(item.dob, "yyyy-mm-dd");
+      item.documentExpireDate = dateFormat(
+        item.documentExpireDate,
+        "yyyy-mm-dd HH:MM:ss"
+      );
       result.push(item);
     }
   }
   return res.json({
     status: 200,
-    msg: 'success',
+    msg: "success",
     data: { total, result }
   });
 };
@@ -239,7 +266,7 @@ exports.getSubmissionList = async (req, res) => {
  * { "status": 200, "msg": "success", data: [{documentType: base64_image}] }
  */
 exports.getUserDocuments = async (req, res) => {
-  const gfs = req.app.get('gfs');
+  const gfs = req.app.get("gfs");
 
   const token = req.query.token;
   const useremail = String(req.query.useremail).toLowerCase();
@@ -247,24 +274,28 @@ exports.getUserDocuments = async (req, res) => {
 
   let docTypes = [];
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
-  if (!UtilsModule.validateEmail(useremail)) return res.json({ status: 400, msg: 'Invalid user email !' });
-  if (type === 'selfie' || type === 'identityDocument') docTypes = [type];
-  else docTypes = ['identityDocument', 'selfie'];
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
+  if (!UtilsModule.validateEmail(useremail))
+    return res.json({ status: 400, msg: "Invalid user email !" });
+  if (type === "selfie" || type === "identityDocument") docTypes = [type];
+  else docTypes = ["identityDocument", "selfie"];
 
   // logic
   const loggedAdmin = await AuthModule.getAdminFromToken(token);
-  if (!loggedAdmin) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!loggedAdmin)
+    return res.json({ status: 400, msg: "token is not valid !" });
 
   try {
     const userRow = await UserModel.findOne({ email: useremail });
-    if (!userRow) return res.json({ status: 400, msg: 'Not existing user email !' });
+    if (!userRow)
+      return res.json({ status: 400, msg: "Not existing user email !" });
 
     const documents = [];
     for (let i = 0; i < docTypes.length; i++) {
       const key = docTypes[i];
       const filename = userRow[key];
-      if (!filename || filename === '') continue;
+      if (!filename || filename === "") continue;
 
       try {
         const file = await UtilsModule.getImageDataFromGrid(gfs, filename);
@@ -278,10 +309,10 @@ exports.getUserDocuments = async (req, res) => {
       }
     }
 
-    return res.json({ status: 200, msg: 'success', data: documents });
+    return res.json({ status: 200, msg: "success", data: documents });
   } catch (error) {
     console.log({ error });
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -290,25 +321,35 @@ exports.getVerifyOwner = async (req, res) => {
 
   try {
     const user = await AdminModel.findOne({ ownerConfirmToken });
-    if (!user) return res.json({ status: 400, msg: 'Invalid owner confirm token !' });
+    if (!user)
+      return res.json({ status: 400, msg: "Invalid owner confirm token !" });
 
     user.ownerConfirmToken = undefined;
     user.status = ModelConstants.ADMIN_STATUS_VERIFIED;
     await user.save();
 
-    const body = EMailTemplateService.getRenderedTemplate('admin-verified', { email: user.email, project: config.project });
-    MailService.send(config.email.masterEmail, user.email, 'Approved your request', body)
-      .then(result => { // eslint-disable-line
+    const body = EMailTemplateService.getRenderedTemplate("admin-verified", {
+      email: user.email,
+      project: config.project
+    });
+    MailService.send(
+      config.email.masterEmail,
+      user.email,
+      "Approved your request",
+      body
+    )
+      .then(result => {
+        // eslint-disable-line
         // console.log(result);
       })
       .catch(err => {
-        console.log('mail sending error: ', err);
+        console.log("mail sending error: ", err);
       });
 
-    return res.json({ status: 200, msg: 'success' });
+    return res.json({ status: 200, msg: "success" });
   } catch (error) {
     console.log({ error });
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -325,23 +366,28 @@ exports.getVerifyOwner = async (req, res) => {
  * @returns { status: 200, msg: "success", data: userRow }
  */
 exports.postUpdateIdentity = async (req, res) => {
-  const gfs = req.app.get('gfs');
+  const gfs = req.app.get("gfs");
 
   const useremail = String(req.body.useremail).toLowerCase();
   const { token, documentType, identityDocument } = req.body;
 
-  if (!UtilsModule.validateEmail(useremail)) return res.json({ status: 400, msg: 'Invalid email !' });
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
-  if (!documentType || documentType === '') return res.json({ status: 400, msg: 'Empty document type !' });
-  if (!identityDocument || identityDocument === '') return res.json({ status: 400, msg: 'Empty identity document !' });
+  if (!UtilsModule.validateEmail(useremail))
+    return res.json({ status: 400, msg: "Invalid email !" });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
+  if (!documentType || documentType === "")
+    return res.json({ status: 400, msg: "Empty document type !" });
+  if (!identityDocument || identityDocument === "")
+    return res.json({ status: 400, msg: "Empty identity document !" });
 
   // logic
   const loggedAdmin = await AuthModule.getAdminFromToken(token);
-  if (!loggedAdmin) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!loggedAdmin)
+    return res.json({ status: 400, msg: "token is not valid !" });
 
   try {
     const userRow = await UserModel.findOne({ email: useremail });
-    if (!userRow) return res.json({ status: 400, msg: 'No existing user !' });
+    if (!userRow) return res.json({ status: 400, msg: "No existing user !" });
 
     // save file
     const filename = `identityDocument-${Date.now()}.${UtilsModule.getImageExt(
@@ -356,12 +402,12 @@ exports.postUpdateIdentity = async (req, res) => {
 
     return userRow.save(err => {
       if (err) {
-        return res.json({ status: 400, msg: 'User save error !' });
+        return res.json({ status: 400, msg: "User save error !" });
       }
-      return res.json({ status: 200, msg: 'success', data: userRow });
+      return res.json({ status: 200, msg: "success", data: userRow });
     });
   } catch (error) {
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -377,22 +423,26 @@ exports.postUpdateIdentity = async (req, res) => {
  * @returns { status: 200, msg: "success", data: userRow }
  */
 exports.postUpdateSelfie = async (req, res) => {
-  const gfs = req.app.get('gfs');
+  const gfs = req.app.get("gfs");
 
   const useremail = String(req.body.useremail).toLowerCase();
   const { token, selfie } = req.body;
 
-  if (!UtilsModule.validateEmail(useremail)) return res.json({ status: 400, msg: 'Invalid user email !' });
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
-  if (!selfie || selfie === '') return res.json({ status: 400, msg: 'Empty selfie !' });
+  if (!UtilsModule.validateEmail(useremail))
+    return res.json({ status: 400, msg: "Invalid user email !" });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
+  if (!selfie || selfie === "")
+    return res.json({ status: 400, msg: "Empty selfie !" });
 
   // logic
   const loggedAdmin = await AuthModule.getAdminFromToken(token);
-  if (!loggedAdmin) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!loggedAdmin)
+    return res.json({ status: 400, msg: "token is not valid !" });
 
   try {
     const userRow = await UserModel.findOne({ email: useremail });
-    if (!userRow) return res.json({ status: 400, msg: 'No existing user !' });
+    if (!userRow) return res.json({ status: 400, msg: "No existing user !" });
 
     // save file
     const filename = `selfie-${Date.now()}.${UtilsModule.getImageExt(selfie)}`;
@@ -404,11 +454,11 @@ exports.postUpdateSelfie = async (req, res) => {
 
     return userRow.save(err => {
       if (err) {
-        return res.json({ status: 400, msg: 'User save error !' });
+        return res.json({ status: 400, msg: "User save error !" });
       }
-      return res.json({ status: 200, msg: 'success', data: userRow });
+      return res.json({ status: 200, msg: "success", data: userRow });
     });
   } catch (error) {
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };

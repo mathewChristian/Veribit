@@ -1,10 +1,4 @@
-import {
-  put,
-  call,
-  fork,
-  all,
-  take,
-} from 'redux-saga/effects';
+import { put, call, fork, all, take } from "redux-saga/effects";
 
 import {
   authActionCreators,
@@ -13,20 +7,19 @@ import {
   USER_UPDATE_REQUEST,
   IDENTITY_UPDATE_REQUEST,
   SELFIE_UPDATE_REQUEST
-} from './actions';
+} from "./actions";
 
-import { KycService } from '../../../services';
+import { KycService } from "../../../services";
 
 export function* asyncLoginRequest({ payload, resolve, reject }) {
   const { token } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/user/info/${token}`,
-        method: 'GET',
-        params: {}
-      });
-      
+    const response = yield call(KycService, {
+      api: `/user/info/${token}`,
+      method: "GET",
+      params: {}
+    });
+
     if (response.status === 200) {
       yield put(authActionCreators.loginSuccess({ user: response.data }));
       resolve(response.data);
@@ -40,13 +33,15 @@ export function* asyncLoginRequest({ payload, resolve, reject }) {
 
 export function* asyncGenTokenRequest({ payload, resolve, reject }) {
   const { email } = payload;
-  try {IDENTITY_UPDATE_REQUEST
-    const response = yield call(KycService,
-      {
-        api: `/user/gentoken`,
-        method: 'POST',
-        params: {email: email}
-      });
+  try {
+    IDENTITY_UPDATE_REQUEST;
+    const response = yield call(KycService, {
+      api: `/user/gentoken`,
+      method: "POST",
+      params: {
+        email: email
+      }
+    });
     if (response.status === 200) {
       yield put(authActionCreators.getTokenSuccess({ user: response.data }));
       resolve(response.data);
@@ -59,25 +54,39 @@ export function* asyncGenTokenRequest({ payload, resolve, reject }) {
 }
 
 export function* asyncUserUpdateRequest({ payload, resolve, reject }) {
-  const { token, residenceCountry, docType, firstname, lastname,dob,documentExpireDate,nationalityCountry,documentId } = payload;
+  const {
+    token,
+    residenceCountry,
+    docType,
+    firstname,
+    lastname,
+    dob,
+    documentExpireDate,
+    nationalityCountry,
+    documentId
+  } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/user/update`,
-        method: 'POST',
-        params: {
-          token: token,
-          residenceCountry: residenceCountry,
-          firstname: firstname,
-          lastname: lastname,
-          dob: dob,
-          documentExpireDate: documentExpireDate,
-          nationalityCountry: nationalityCountry,
-          documentId: documentId
-        }
-      });
+    const response = yield call(KycService, {
+      api: `/user/update`,
+      method: "POST",
+      params: {
+        token: token,
+        residenceCountry: residenceCountry,
+        firstname: firstname,
+        lastname: lastname,
+        dob: dob,
+        documentExpireDate: documentExpireDate,
+        nationalityCountry: nationalityCountry,
+        documentId: documentId
+      }
+    });
     if (response.status === 200) {
-      yield put(authActionCreators.updateUserSuccess({ profile: response.data, docType: docType}));
+      yield put(
+        authActionCreators.updateUserSuccess({
+          profile: response.data,
+          docType: docType
+        })
+      );
       resolve(response.data);
     } else {
       reject(response.message);
@@ -90,18 +99,19 @@ export function* asyncUserUpdateRequest({ payload, resolve, reject }) {
 export function* asyncIdentityUpdateRequest({ payload, resolve, reject }) {
   const { token, documentType, identityDocument } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/user/update/identity`,
-        method: 'POST',
-        params: {
-          token: token,
-          documentType: documentType,
-          identityDocument: identityDocument
-        }
-      });
+    const response = yield call(KycService, {
+      api: `/user/update/identity`,
+      method: "POST",
+      params: {
+        token: token,
+        documentType: documentType,
+        identityDocument: identityDocument
+      }
+    });
     if (response.status === 200) {
-      yield put(authActionCreators.updateIdentitySuccess({ profile: response.data}));
+      yield put(
+        authActionCreators.updateIdentitySuccess({ profile: response.data })
+      );
       resolve(response.data);
     } else {
       reject(response.message);
@@ -114,17 +124,18 @@ export function* asyncIdentityUpdateRequest({ payload, resolve, reject }) {
 export function* asyncSelfieUpdateRequest({ payload, resolve, reject }) {
   const { token, selfie } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/user/update/selfie`,
-        method: 'POST',
-        params: {
-          token: token,
-          selfie: selfie
-        }
-      });
+    const response = yield call(KycService, {
+      api: `/user/update/selfie`,
+      method: "POST",
+      params: {
+        token: token,
+        selfie: selfie
+      }
+    });
     if (response.status === 200) {
-      yield put(authActionCreators.updateSelfieSuccess({ profile: response.data}));
+      yield put(
+        authActionCreators.updateSelfieSuccess({ profile: response.data })
+      );
       resolve(response.data);
     } else {
       reject(response.message);
@@ -169,12 +180,12 @@ export function* watchSelfieUpdateRequest() {
   }
 }
 
-export default function* () {
+export default function*() {
   yield all([
     fork(watchLoginRequest),
     fork(watchGenTokenRequest),
     fork(watchUserUpdateRequest),
     fork(watchIdentityUpdateRequest),
-    fork(watchSelfieUpdateRequest),
+    fork(watchSelfieUpdateRequest)
   ]);
 }

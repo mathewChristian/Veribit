@@ -1,13 +1,10 @@
 {
   "apps": [
     {
-      "name": "mousekyc-backend",
+      "name": "veribit-backend",
       "script": "src/app.js",
       "watch": true,
-      "ignore_watch": [
-        "node_modules",
-        "uploads"
-      ],
+      "ignore_watch": ["node_modules", "uploads"],
       "env": {
         "NODE_ENV": "development"
       },

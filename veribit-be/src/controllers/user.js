@@ -1,17 +1,17 @@
-const uuidv1 = require('uuid/v1');
-const UserModel = require('../models/user');
-const PassportInfoModel = require('../models/passportInfo');
-const UtilsModule = require('../modules/utils');
+const uuidv1 = require("uuid/v1");
+const UserModel = require("../models/user");
+const PassportInfoModel = require("../models/passportInfo");
+const UtilsModule = require("../modules/utils");
 
 exports.getInfoToken = async (req, res) => {
   const token = req.params.token;
 
   const user = await UserModel.findOne({ token });
-  if (!user) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!user) return res.json({ status: 400, msg: "token is not valid !" });
 
   return res.json({
     status: 200,
-    msg: 'success',
+    msg: "success",
     data: {
       email: user.email,
       token,
@@ -25,15 +25,18 @@ exports.getPassportInfo = async (req, res) => {
   const token = req.params.token;
 
   const user = await UserModel.findOne({ token });
-  if (!user) return res.json({ status: 400, msg: 'Not found user !' });
-  if (!user.identityDocument) return res.json({ status: 400, msg: 'Not existing identity document !' });
+  if (!user) return res.json({ status: 400, msg: "Not found user !" });
+  if (!user.identityDocument)
+    return res.json({ status: 400, msg: "Not existing identity document !" });
 
-  const piRow = await PassportInfoModel.findOne({ filename: user.identityDocument });
-  if (!piRow) return res.json({ status: 400, msg: 'Not verified yet !' });
+  const piRow = await PassportInfoModel.findOne({
+    filename: user.identityDocument
+  });
+  if (!piRow) return res.json({ status: 400, msg: "Not verified yet !" });
 
   return res.json({
     status: 200,
-    msg: 'success',
+    msg: "success",
     data: {
       firstname: piRow.firstname,
       lastname: piRow.lastname,
@@ -42,7 +45,7 @@ exports.getPassportInfo = async (req, res) => {
       nationalityCountry: piRow.nationalityCountry, // Country code
       documentId: piRow.documentId,
       filename: piRow.filename,
-      created: piRow.created,
+      created: piRow.created
     }
   });
 };
@@ -50,13 +53,15 @@ exports.getPassportInfo = async (req, res) => {
 exports.postGenToken = async (req, res) => {
   const email = String(req.body.email).toLowerCase();
 
-  if (!UtilsModule.validateEmail(email)) return res.json({ status: 400, msg: 'Invalid email !' });
+  if (!UtilsModule.validateEmail(email))
+    return res.json({ status: 400, msg: "Invalid email !" });
 
   try {
     let token;
     let userRow = await UserModel.findOne({ email });
     if (!userRow) {
       token = uuidv1(); // '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
+      //token = mbtoken;
       const tokenExpire = Date.now() + 24 * 3600 * 60;
       userRow = new UserModel({ email, token, tokenExpire });
       await userRow.save();
@@ -66,16 +71,16 @@ exports.postGenToken = async (req, res) => {
 
     return res.json({
       status: 200,
-      msg: 'success',
+      msg: "success",
       data: {
         email,
         token,
         approvalStatus: userRow.approvalStatus,
         approvalDescription: userRow.approvalDescription
-      },
+      }
     });
   } catch (error) {
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -84,13 +89,16 @@ exports.postInit = async (req, res) => {
   const email = String(req.body.email).toLowerCase();
   const apiKey = String(req.body.apiKey);
 
-  if (!UtilsModule.checkApiKey(apiKey)) return res.json({ status: 400, msg: 'Invalid API Key !', error: true });
-  if (!UtilsModule.validateEmail(email)) return res.json({ status: 400, msg: 'Invalid email !', error: true });
+  if (!UtilsModule.checkApiKey(apiKey))
+    return res.json({ status: 400, msg: "Invalid API Key !", error: true });
+  if (!UtilsModule.validateEmail(email))
+    return res.json({ status: 400, msg: "Invalid email !", error: true });
 
   try {
     let token;
     let userRow = await UserModel.findOne({ email });
     if (!userRow) {
+      //use token frorm MB
       token = uuidv1(); // '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
       const tokenExpire = Date.now() + 24 * 3600 * 60;
       userRow = new UserModel({ email, token, tokenExpire });
@@ -98,30 +106,30 @@ exports.postInit = async (req, res) => {
 
       return res.json({
         status: 200,
-        msg: 'success',
+        msg: "success",
         data: {
           token,
           frontendUrl: UtilsModule.getFrontendUrl(token),
           passportInfoUrl: UtilsModule.getPassportInfoUrl(token),
           statusInfoUrl: UtilsModule.getStatusInfoUrl(token),
-          baseUrl: UtilsModule.getBaseUrl(),
-        },
+          baseUrl: UtilsModule.getBaseUrl()
+        }
       });
     }
     token = userRow.token;
     return res.json({
       status: 200,
-      msg: 'success',
+      msg: "success",
       data: {
         token,
         frontendUrl: UtilsModule.getFrontendUrl(token),
         passportInfoUrl: UtilsModule.getPassportInfoUrl(token),
         statusInfoUrl: UtilsModule.getStatusInfoUrl(token),
-        baseUrl: UtilsModule.getBaseUrl(),
-      },
+        baseUrl: UtilsModule.getBaseUrl()
+      }
     });
   } catch (error) {
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -172,14 +180,17 @@ exports.postUpdate = async (req, res) => {
   } = req.body;
 
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
   const userRow = await UserModel.findOne({ token });
-  if (!userRow) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!userRow) return res.json({ status: 400, msg: "token is not valid !" });
 
   // logic
   try {
-    if (userRow.approvalStatus === 'BLOCKED') return res.json({ status: 400, msg: 'status is blocked !' });
-    if (userRow.approvalStatus === 'APPROVED') return res.json({ status: 400, msg: 'status is approved !' });
+    if (userRow.approvalStatus === "BLOCKED")
+      return res.json({ status: 400, msg: "status is blocked !" });
+    if (userRow.approvalStatus === "APPROVED")
+      return res.json({ status: 400, msg: "status is approved !" });
 
     // Add user
     userRow.set({
@@ -203,12 +214,12 @@ exports.postUpdate = async (req, res) => {
 
     return userRow.save(err => {
       if (err) {
-        return res.json({ status: 400, msg: 'User save error !' });
+        return res.json({ status: 400, msg: "User save error !" });
       }
-      return res.json({ status: 200, msg: 'success' });
+      return res.json({ status: 200, msg: "success" });
     });
   } catch (error) {
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -224,19 +235,23 @@ exports.postUpdate = async (req, res) => {
  * @returns { status: 200, msg: "success", data: userRow }
  */
 exports.postUpdateIdentity = async (req, res) => {
-  const gfs = req.app.get('gfs');
+  const gfs = req.app.get("gfs");
   const { token, documentType, identityDocument } = req.body;
 
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
   const userRow = await UserModel.findOne({ token });
-  if (!userRow) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!userRow) return res.json({ status: 400, msg: "token is not valid !" });
 
-  if (!documentType || documentType === '') return res.json({ status: 400, msg: 'Empty document type !' });
-  if (!identityDocument || identityDocument === '') return res.json({ status: 400, msg: 'Empty identity document !' });
+  if (!documentType || documentType === "")
+    return res.json({ status: 400, msg: "Empty document type !" });
+  if (!identityDocument || identityDocument === "")
+    return res.json({ status: 400, msg: "Empty identity document !" });
 
   try {
-    if (userRow.approvalStatus === 'BLOCKED') return res.json({ status: 400, msg: 'status is blocked !' });
+    if (userRow.approvalStatus === "BLOCKED")
+      return res.json({ status: 400, msg: "status is blocked !" });
 
     // save file
     const filename = `identityDocument-${Date.now()}.${UtilsModule.getImageExt(
@@ -251,13 +266,13 @@ exports.postUpdateIdentity = async (req, res) => {
 
     return userRow.save(err => {
       if (err) {
-        return res.json({ status: 400, msg: 'User save error !' });
+        return res.json({ status: 400, msg: "User save error !" });
       }
-      return res.json({ status: 200, msg: 'success', data: userRow });
+      return res.json({ status: 200, msg: "success", data: userRow });
     });
   } catch (error) {
     console.log(error);
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
 
@@ -272,18 +287,21 @@ exports.postUpdateIdentity = async (req, res) => {
  * @returns { status: 200, msg: "success", data: userRow }
  */
 exports.postUpdateSelfie = async (req, res) => {
-  const gfs = req.app.get('gfs');
+  const gfs = req.app.get("gfs");
   const { token, selfie } = req.body;
 
   // validation
-  if (!token || token === '') return res.json({ status: 400, msg: 'Empty token !' });
+  if (!token || token === "")
+    return res.json({ status: 400, msg: "Empty token !" });
   const userRow = await UserModel.findOne({ token });
-  if (!userRow) return res.json({ status: 400, msg: 'token is not valid !' });
+  if (!userRow) return res.json({ status: 400, msg: "token is not valid !" });
 
-  if (!selfie || selfie === '') return res.json({ status: 400, msg: 'Empty selfie !' });
+  if (!selfie || selfie === "")
+    return res.json({ status: 400, msg: "Empty selfie !" });
 
   try {
-    if (userRow.approvalStatus === 'BLOCKED') return res.json({ status: 400, msg: 'status is blocked !' });
+    if (userRow.approvalStatus === "BLOCKED")
+      return res.json({ status: 400, msg: "status is blocked !" });
 
     // save file
     let filename = `selfie-${Date.now()}`;
@@ -292,18 +310,18 @@ exports.postUpdateSelfie = async (req, res) => {
     // Add user
     userRow.set({
       selfie: filename,
-      approvalStatus: 'PENDING',
+      approvalStatus: "PENDING",
       approvalDescription: undefined
     });
 
     return userRow.save(err => {
       if (err) {
-        return res.json({ status: 400, msg: 'User save error !' });
+        return res.json({ status: 400, msg: "User save error !" });
       }
-      return res.json({ status: 200, msg: 'success', data: userRow });
+      return res.json({ status: 200, msg: "success", data: userRow });
     });
   } catch (error) {
     console.log(error);
-    return res.json({ status: 400, msg: 'Error occurred !' });
+    return res.json({ status: 400, msg: "Error occurred !" });
   }
 };
