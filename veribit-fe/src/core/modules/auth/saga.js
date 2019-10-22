@@ -6,22 +6,46 @@ import {
   GEN_TOKEN_REQUEST,
   USER_UPDATE_REQUEST,
   IDENTITY_UPDATE_REQUEST,
-  SELFIE_UPDATE_REQUEST
-} from "./actions";
+  SELFIE_UPDATE_REQUEST,
+  FUND_WALLET_INITIATE_REQUEST,
+  PREPARE_UTXOs_REQUEST
 
-import { KycService } from "../../../services";
+} from './actions';
+
+import { KycService, ChainMediaFundWallet, PrepareUTXOs, BroadCastTXN } from '../../../services';
 
 export function* asyncLoginRequest({ payload, resolve, reject }) {
   const { token } = payload;
   try {
-    const response = yield call(KycService, {
-      api: `/user/info/${token}`,
-      method: "GET",
-      params: {}
-    });
+
+    const response = yield call(KycService,
+      {
+        api: `/user/info/${token}`,
+        method: 'GET',
+        params: {}
+      });
 
     if (response.status === 200) {
       yield put(authActionCreators.loginSuccess({ user: response.data }));
+      resolve(response.data);
+    } else {
+      reject(response.message);
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
+export function* asyncFundWalletinitiate({ payload, resolve, reject }) {
+  const { address } = payload;
+  try {
+    const response = yield call(ChainMediaFundWallet,
+      {
+        api: `https://api.bitindex.network/api/v3/addr/utxos?address=${address}`,
+        method: 'GET'
+      });
+    if (response.status === 200) {
+      yield put(authActionCreators.fundWalletInitiateSuccess({ data: response.data }));
       resolve(response.data);
     } else {
       reject(response.message);
@@ -145,6 +169,25 @@ export function* asyncSelfieUpdateRequest({ payload, resolve, reject }) {
   }
 }
 
+export function* asyncPrepareUTXOs({ payload, resolve, reject }) {
+  const { token, selfie } = payload;
+  try {
+    const response = yield call(PrepareUTXOs,
+      {
+        api: `https://api.bitindex.network/api/v3/main/tx/send`,
+        method: 'POST',
+      });
+    if (response.status === 200) {
+      yield put(authActionCreators.prepareUTXOsSuccess({ profile: response.data}));
+      resolve(response.data);
+    } else {
+      reject(response.message);
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
 export function* watchLoginRequest() {
   while (true) {
     const action = yield take(LOGIN_REQUEST);
@@ -180,12 +223,37 @@ export function* watchSelfieUpdateRequest() {
   }
 }
 
-export default function*() {
+export function* watchFundWalletinitiate() {
+  while (true) {
+    const action = yield take(FUND_WALLET_INITIATE_REQUEST);
+    yield* asyncFundWalletinitiate(action);
+  }
+}
+
+export function* watchPrepareUTXOs() {
+  while (true) {
+    const action = yield take(PREPARE_UTXOs_REQUEST);
+    yield* asyncPrepareUTXOs(action);
+  }
+}
+
+export function* watchBroadCastTXN() {
+  while (true) {
+    const action = yield take(PREPARE_UTXOs_REQUEST);
+    yield* asyncPrepareUTXOs(action);
+  }
+}
+
+export default function* () {
+  
   yield all([
     fork(watchLoginRequest),
     fork(watchGenTokenRequest),
     fork(watchUserUpdateRequest),
     fork(watchIdentityUpdateRequest),
-    fork(watchSelfieUpdateRequest)
+    fork(watchSelfieUpdateRequest),
+    fork(watchFundWalletinitiate),
+    fork(watchPrepareUTXOs),
+    fork(watchBroadCastTXN)
   ]);
 }
