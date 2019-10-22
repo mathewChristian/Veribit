@@ -1,7 +1,30 @@
 {
-  "name": "nrl-kyc",
-  "version": "0.1.0",
+  "name": "Veribit",
+  "version": "0.0.5",
+  "description": "Veribit Admin",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoyMurphy/Veribit/veribit-admin.git"
+  },
+  "keywords": [
+    "veribit",
+    "bitcoin",
+    "identity",
+    "verification",
+    "aml",
+    "kyc",
+    "docker",
+    "nodejs",
+    "mongdb"
+  ],
+  "author": "Roy Murphy",
+  "private": true,
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RoyMurphy/Veribit/veribit-admin/issues"
+  },
+  "homepage": "https://github.com/RoyMurphy/Veribit/veribit-admin#readme",
   "dependencies": {
     "@moneybutton/api-client": "^0.27.0",
     "ajv": "^6.5.0",
