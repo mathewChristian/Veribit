@@ -19,7 +19,6 @@
     "mongdb"
   ],
   "author": "Roy Murphy",
-  "private": true,
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/RoyMurphy/Veribit/veribit-fe/issues"
@@ -30,6 +29,8 @@
     "ajv": "^6.5.0",
     "antd": "^3.4.4",
     "axios": ">=0.18.1",
+    "browser-image-compression": "^1.0.6",
+    "bsv": "^1.0.0",
     "font-awesome": "^4.7.0",
     "handlebars": ">=4.0.14",
     "js-yaml": ">=3.13.1",
