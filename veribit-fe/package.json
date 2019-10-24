@@ -19,6 +19,7 @@
     "mongdb"
   ],
   "author": "Roy Murphy",
+  "private": true,
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/RoyMurphy/Veribit/veribit-fe/issues"
