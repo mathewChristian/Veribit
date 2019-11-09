@@ -1,31 +1,21 @@
-import {
-  put,
-  call,
-  fork,
-  all,
-  take,
-} from 'redux-saga/effects';
+import { put, call, fork, all, take } from "redux-saga/effects";
 
-import {
-  authActionCreators,
-  LOGIN_REQUEST,
-  SIGNUP_REQUEST
-} from './actions';
+import { authActionCreators, LOGIN_REQUEST, SIGNUP_REQUEST } from "./actions";
 
-import { KycService } from '../../../services';
+import { KycService } from "../../../services";
 
 export function* asyncLoginRequest({ payload, resolve, reject }) {
-  const { email, password } = payload;
+  const { userId, email, password } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/admin/signin`,
-        method: 'POST',
-        params: {
-          email: email,
-          password: password
-        }
-      });
+    const response = yield call(KycService, {
+      api: `/admin/signin`,
+      method: "POST",
+      params: {
+        userId: userId,
+        email: email,
+        password: password
+      }
+    });
     // @TODO: Open next lines after login api is completed
     if (response.status === 200) {
       yield put(authActionCreators.loginSuccess({ user: response.data }));
@@ -39,23 +29,22 @@ export function* asyncLoginRequest({ payload, resolve, reject }) {
 }
 
 export function* asyncSignupRequest({ payload, resolve, reject }) {
-  const { email, password } = payload;
+  const { userId, email, provider } = payload;
   try {
-    const response = yield call(KycService,
-      {
-        api: `/admin/signup`,
-        method: 'POST',
-        params: {
-          email: email,
-          password: password
-        }
-      });
+    const response = yield call(KycService, {
+      api: `/admin/signup`,
+      method: "POST",
+      params: {
+        userId: userId,
+        email: email,
+        provider: provider
+      }
+    });
     resolve(response);
   } catch (e) {
     reject(e);
   }
 }
-
 
 export function* watchLoginRequest() {
   while (true) {
@@ -72,8 +61,5 @@ export function* watchSignupRequest() {
 }
 
 export default function* () {
-  yield all([
-    fork(watchLoginRequest),
-    fork(watchSignupRequest)
-  ]);
+  yield all([fork(watchLoginRequest), fork(watchSignupRequest)]);
 }

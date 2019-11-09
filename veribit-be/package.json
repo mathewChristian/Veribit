@@ -1,7 +1,7 @@
 {
-  "name": "norest-kyc-be",
-  "version": "1.0.0",
-  "description": "norest kyc backend",
+  "name": "Veribit",
+  "version": "0.0.7",
+  "description": "Veribit Backend",
   "main": "src/app.js",
   "scripts": {
     "start": "nodemon src/app.js",
@@ -9,21 +9,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gedanziger/norest-kyc-be.git"
+    "url": "git+https://github.com/RoyMurphy/Veribit/veribit-be.git"
   },
   "keywords": [
+    "veribit",
+    "bitcoin",
+    "identity",
+    "verification",
+    "aml",
     "kyc",
     "docker",
     "nodejs",
     "mongdb"
   ],
-  "author": "Oleg Baturov",
+  "author": "Roy Murphy",
   "private": true,
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gedanziger/norest-kyc-be/issues"
+    "url": "https://github.com/RoyMurphy/Veribit/eribit-be/issues"
   },
-  "homepage": "https://github.com/gedanziger/norest-kyc-be#readme",
+  "homepage": "https://github.com/RoyMurphy/Veribit/veribit-be#readme",
   "dependencies": {
     "base64-img": "^1.0.4",
     "bcrypt-nodejs": "^0.0.3",
@@ -44,12 +49,13 @@
     "mailcomposer": "^4.0.2",
     "mailgun-js": "^0.18.0",
     "mocha": "^5.2.0",
-    "mongoose": "^5.1.2",
+    "mongoose": "^5.7.5",
     "mpath": ">=0.5.1",
     "nocache": "^2.0.0",
     "nodemon": "^1.17.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.5.0",
     "querystring": "^0.2.0",
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
