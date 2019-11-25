@@ -4,12 +4,14 @@ import {
   USER_UPDATE_REQUEST_SUCCESS,
   IDENTITY_UPDATE_REQUEST_SUCCESS,
   SELFIE_UPDATE_REQUEST_SUCCESS,
+  MB_USER_REQUEST_SUCCESS,
+  MB_USER_CLEAR_REQUEST_SUCCESS
 } from './actions';
 import { initialState } from '../initialState';
 
 export default function auth(state = initialState.auth, action = {}) {
   const { type, payload } = action;
-  
+
   switch (type) {
     case LOGIN_REQUEST_SUCCESS: {
       if (payload.user.approvalStatus === 'NO_SUBMISSION_YET' || payload.user.approvalStatus === 'ACTION_REQUESTED') {
@@ -62,6 +64,22 @@ export default function auth(state = initialState.auth, action = {}) {
       return {
         ...state,
         profile: payload.profile
+      }
+      break;
+    }
+    case MB_USER_REQUEST_SUCCESS: {
+      return {
+        ...state,
+        userId: payload.userId,
+        email: payload.email
+      }
+      break;
+    }
+    case MB_USER_CLEAR_REQUEST_SUCCESS: {
+      return {
+        ...state,
+        userId: '',
+        email: ''
       }
       break;
     }

@@ -4,21 +4,21 @@ import { connectAuth } from 'core';
 
 class PrivateRoute extends Component {
 
-  render () {
+  render() {
     const { user, ...props } = this.props;
 
     if (user.token) {
       return (
-        <Route {...props}/>
+        <Route {...props} />
       );
     } else {
       return (
-        <Redirect to="/signin"/>
+        <Redirect to="/signin" />
       );
     }
   }
 }
-const mapStateToProps = ({auth}) => ({
+const mapStateToProps = ({ auth }) => ({
   user: auth.user
 });
 export default connectAuth(mapStateToProps, {})(PrivateRoute);

@@ -4,16 +4,16 @@ import thunk from 'redux-thunk';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 import sagas from './sagas';
-import {loadState, saveState} from "../../services/localStorage";
+import { loadState, saveState } from "../../services/localStorage";
 import rootReducer from './reducers';
-import {throttle} from "lodash";
+import { throttle } from "lodash";
 
 const persistedState = loadState();
 const sagaMiddleware = createSagaMiddleware();
 
 const middlewares = [
   thunk,
-  sagaMiddleware  
+  sagaMiddleware
 ];
 
 if (process.env.NODE_ENV === 'development') {
@@ -28,8 +28,8 @@ const enhancers = [
 /* eslint-disable no-underscore-dangle */
 const composeEnhancers =
   process.env.NODE_ENV !== 'production' &&
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+    typeof window === 'object' &&
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
 /* eslint-enable */
 
