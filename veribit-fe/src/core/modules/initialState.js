@@ -1,7 +1,9 @@
 const auth = {
   user: {},
   profile: {},
-  docType: ''
+  docType: '',
+  userId: '',
+  email: ''
 };
 
 const validation = {

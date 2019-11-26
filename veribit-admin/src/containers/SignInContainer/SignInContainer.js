@@ -6,7 +6,7 @@ import { connectAuth, authActionCreators } from "core";
 import { promisify } from "../../utilities";
 import { validateEmail } from "../../services/common";
 import logo from "assets/img/logo.png";
-import queryString from "query-string";
+import { store } from 'core';
 
 const { Content, Header } = Layout;
 const { MoneyButtonClient } = require("@moneybutton/api-client");
@@ -21,39 +21,49 @@ class SignInContainer extends PureComponent {
     super(props);
     this.state = {
       msg: "",
-      haveGrant: false,
       userId: "",
-      email: ""
+      email: "",
+      isMbUserStored: false
     };
   }
 
-  componentDidMount() {
-    const values = queryString.parse(this.props.location.search);
-    if (values.code) {
-      this.setState(...this.state, { haveGrant: true });
+  //get values from redux store
+  reduxstore = this.getCurrentStateFromStore();
+
+  getCurrentStateFromStore() {
+    return {
+      userId: store.getState().auth.userId,
+      email: store.getState().auth.email
     }
   }
 
-  async handleMoneyButtonResponse() {
-    try {
-      await client.handleAuthorizationResponse();
-      const { id: userId } = await client.getIdentity();
-      const { primaryPaymail: email } = await client.getUserProfile(userId);
-      if (validateEmail(email)) {
-        this.setState(...this.state, { email: email, userId: userId, isEmailValidate: true });
-      }
-    } catch (error) {
-      this.setState(...this.state, { msg: error });
+  updateStateFromStore = () => {
+    const currentState = this.getCurrentStateFromStore();
+
+    if (this.state !== currentState) {
+      this.setState(currentState);
     }
+  }
+
+  componentDidMount() {
+    this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
+
+    //check if mbUser is set in the state
+    console.log(this.reduxstore)
+    if (validateEmail(this.reduxstore.email)) {
+      this.setState(...this.state, { email: this.reduxstore.email, userId: this.reduxstore.userId, isMbUserStored: true });
+    }
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
   }
 
   async login() {
-    if (this.state.haveGrant == true) {
-      try {
-        await this.handleMoneyButtonResponse();
-      } catch (error) {
-        this.setState(...this.state, { msg: error });
-      }
+    console.log(this.state.email.length)
+    console.log(this.state.email)
+    console.log(this.state.userId)
+    if (this.state.email.length !== 0 && validateEmail(this.state.email)) {
 
       promisify(this.props.login, {
         userId: this.state.userId,
@@ -61,6 +71,7 @@ class SignInContainer extends PureComponent {
         password: this.state.userId
       })
         .then(res => {
+          promisify(this.props.clearMbUser, { userId: this.state.userId, email: this.state.email })
           if (res.status === 200) {
             this.props.history.push("/dashboard");
           }
@@ -70,13 +81,7 @@ class SignInContainer extends PureComponent {
   }
 
   async moneyButtonSignUp(provider) {
-    if (this.state.haveGrant == true) {
-      try {
-        await this.handleMoneyButtonResponse();
-      } catch (error) {
-        this.setState(...this.state, { msg: error });
-      }
-
+    if (this.state.email.length !== 0 && validateEmail(this.state.email)) {
       promisify(this.props.signUp, {
         userId: this.state.userId,
         email: this.state.email,
@@ -95,17 +100,18 @@ class SignInContainer extends PureComponent {
     }
   }
 
-  async relayOneSignUp() { }
+  //async relayOneSignUp() { }
 
   moneyButtonLoginGrant = () => {
     client.requestAuthorization(
       "auth.user_identity:read users.profiles:read",
-      "http://localhost:3006/signin"
+      "http://localhost:3006/mbOauth"
     );
   };
 
   render() {
-    if (this.state.haveGrant) {
+    console.log(this.state.isMbUserStored)
+    if (this.state.isMbUserStored) {
       return (
         <div className="block">
           <Layout>
@@ -182,12 +188,13 @@ const mapStateToProps = ({ auth }) => ({
   user: auth.user
 });
 const mapDisptachToProps = dispatch => {
-  const { login, signUp } = authActionCreators;
+  const { login, signUp, clearMbUser } = authActionCreators;
 
   return bindActionCreators(
     {
       login,
-      signUp
+      signUp,
+      clearMbUser
     },
     dispatch
   );

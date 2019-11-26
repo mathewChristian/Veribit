@@ -1,6 +1,12 @@
 import { put, call, fork, all, take } from "redux-saga/effects";
 
-import { authActionCreators, LOGIN_REQUEST, SIGNUP_REQUEST } from "./actions";
+import {
+  authActionCreators,
+  LOGIN_REQUEST,
+  SIGNUP_REQUEST,
+  MB_USER_REQUEST,
+  MB_USER_CLEAR_REQUEST
+} from "./actions";
 
 import { KycService } from "../../../services";
 
@@ -46,6 +52,36 @@ export function* asyncSignupRequest({ payload, resolve, reject }) {
   }
 }
 
+export function* asyncMbUserRequest({ payload, resolve, reject }) {
+  const userId = payload.userId;
+  const email = payload.email;
+  try {
+    if (email) {
+      yield put(authActionCreators.getMbUserSuccess({ userId: userId, email: email }));
+      resolve({ userId: userId, email: email });
+    } else {
+      reject("Money Button User could not me retrieved");
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
+export function* asyncMbUserClearRequest({ payload, resolve, reject }) {
+  const userId = payload.userId;
+  const email = payload.email;
+  try {
+    if (email) {
+      yield put(authActionCreators.clearMbUserSuccess({ userId: userId, email: email }));
+      resolve({ userId: userId, email: email });
+    } else {
+      reject("Money Button User could not me cleared");
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
 export function* watchLoginRequest() {
   while (true) {
     const action = yield take(LOGIN_REQUEST);
@@ -60,6 +96,25 @@ export function* watchSignupRequest() {
   }
 }
 
+export function* watchMbUserRequest() {
+  while (true) {
+    const action = yield take(MB_USER_REQUEST);
+    yield* asyncMbUserRequest(action);
+  }
+}
+
+export function* watchMbUserClearRequest() {
+  while (true) {
+    const action = yield take(MB_USER_CLEAR_REQUEST);
+    yield* asyncMbUserClearRequest(action);
+  }
+}
+
 export default function* () {
-  yield all([fork(watchLoginRequest), fork(watchSignupRequest)]);
+  yield all([
+    fork(watchLoginRequest),
+    fork(watchSignupRequest),
+    fork(watchMbUserRequest),
+    fork(watchMbUserClearRequest),
+  ]);
 }
