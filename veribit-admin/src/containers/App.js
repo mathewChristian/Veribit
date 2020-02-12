@@ -7,8 +7,10 @@ import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
 import PageNotFound from 'components/PageNotFound/PageNotFound';
 import SignInContainer from 'containers/SignInContainer/SignInContainer';
 import SignUpContainer from 'containers/SignUpContainer/SignUpContainer';
+import mbOauthContainer from 'containers/mbOauthContainer/mbOauthContainer';
 
 import 'assets/styles/App.less';
+import 'assets/styles/loader.less';
 
 class App extends Component {
   render() {
@@ -20,6 +22,7 @@ class App extends Component {
               <Switch>
                 <Route path="/signin" exact component={SignInContainer} />
                 <Route exact path="/signup" component={SignUpContainer} />
+                <Route path="/mbOauth" exact component={mbOauthContainer} />
                 <Route exact path="/404" component={PageNotFound} />
                 <PrivateRoute path="/" component={RoutesContainer} />
               </Switch>

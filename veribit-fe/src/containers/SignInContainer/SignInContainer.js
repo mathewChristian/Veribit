@@ -6,10 +6,11 @@ import { connectAuth, authActionCreators } from "core";
 import { promisify } from "../../utilities";
 import { validateEmail } from "../../services/common";
 import logo from "assets/img/logo.png";
-import queryString from "query-string";
+import { store } from 'core';
 
 const { MoneyButtonClient } = require("@moneybutton/api-client");
 const client = new MoneyButtonClient("58556f8075944af8708f58de0c2b8868");
+
 
 const { Content, Header } = Layout;
 
@@ -28,18 +29,42 @@ class SignInContainer extends PureComponent {
     this.state = {
       isFocus: false,
       user: "",
-      email: "",
       isEmailValidate: true,
-
-      haveGrant: false,
       userId: "",
-      email: ""
+      email: "",
+      isMbUserStored: false
     };
   }
 
+  //get values from redux store
+  reduxstore = this.getCurrentStateFromStore();
+
+  getCurrentStateFromStore() {
+    return {
+      userId: store.getState().auth.userId,
+      email: store.getState().auth.email
+    }
+  }
+
+  updateStateFromStore = () => {
+    const currentState = this.getCurrentStateFromStore();
+
+    if (this.state !== currentState) {
+      this.setState(currentState);
+    }
+  }
+
+  moneyButtonLoginGrant = () => {
+    client.requestAuthorization(
+      "auth.user_identity:read users.profiles:read",
+      "http://localhost:3006/mbOauth"
+    );
+  };
+
   async componentDidMount() {
+    this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
+
     let token = this.props.match.params.token;
-    console.log(token)
     if (token) {
       promisify(this.props.login, { token: token })
         .then(user => {
@@ -48,82 +73,61 @@ class SignInContainer extends PureComponent {
         .catch(e => console.log(e));
     }
 
-    const { code } = queryString.parse(this.props.location.search);
-    if (code) {
-      try {
-        this.setState(...this.state, { haveGrant: true });
-        await this.login();
-      } catch (error) {
-        this.setState(...this.state, { msg: error });
-      }
+    //check if mbUser is set in the state
+    console.log(this.reduxstore)
+    if (validateEmail(this.reduxstore.email)) {
+      this.setState(...this.state, { email: this.reduxstore.email, userId: this.reduxstore.userId, isMbUserStored: true });
     }
   }
 
-  async handleMoneyButtonResponse() {
-    try {
-      await client.handleAuthorizationResponse();
-      const { id: userId } = await client.getIdentity();
-      const { primaryPaymail: email } = await client.getUserProfile(userId);
-      if (validateEmail(email)) {
-        this.setState(...this.state, { email: email, userId: userId, isEmailValidate: true });
-      }
-    } catch (error) {
-      this.setState(...this.state, { msg: error });
-    }
+  componentWillUnmount() {
+    this.unsubscribeStore();
   }
+
+
 
   async login() {
-    const { code } = queryString.parse(this.props.location.search);
-    if (code) {
-      try {
-        console.log("access token")
-        await this.handleMoneyButtonResponse();
-      } catch (error) {
-        this.setState(...this.state, { msg: error });
-      }
+    console.log(this.state.email.length)
+    console.log(this.state.email)
+    console.log(!this.state.user.approvalStatus)
 
-      if (this.state.email.length !== 0 && validateEmail(this.state.email) && !this.state.user.approvalStatus) {
-        this.setState(...this.state, {
-          isEmailValidate: true
-        });
-        promisify(this.props.genToken, {
-          email: this.state.email
+    if (this.state.email.length !== 0 && validateEmail(this.state.email) && !this.state.user.approvalStatus) {
+      this.setState(...this.state, { isEmailValidate: true });
+      promisify(this.props.genToken, {
+        email: this.state.email
+      })
+        .then(user => {
+          if (user.token) {
+            promisify(this.props.login, { token: user.token })
+              .then(user => {
+                promisify(this.props.clearMbUser, { userId: this.state.userId, email: this.state.email })
+                this.setState(...this.state, { user: user });
+                if (user.approvalStatus === "NO_SUBMISSION_YET") {
+
+                  this.props.history.push("/validation");
+                }
+              })
+              .catch(e => console.log(e));
+          }
         })
-          .then(user => {
-            if (user.token) {
-              promisify(this.props.login, { token: user.token })
-                .then(user => {
-                  this.setState(...this.state, { user: user });
-                  if (user.approvalStatus === "NO_SUBMISSION_YET")
-                    this.props.history.push("/validation");
-                })
-                .catch(e => console.log(e));
-            }
-          })
-          .catch(e => console.log(e));
-      } else {
-        this.setState(...this.state, { isEmailValidate: false });
-      }
-
-      if (
-        this.state.user.approvalStatus &&
-        this.state.user.approvalStatus === "ACTION_REQUESTED"
-      ) {
-        this.props.history.push("/validation");
-      }
+        .catch(e => console.log(e));
+    } else {
+      this.setState(...this.state, { isEmailValidate: false });
     }
+
+    if (
+      this.state.user.approvalStatus &&
+      this.state.user.approvalStatus === "ACTION_REQUESTED"
+    ) {
+      this.props.history.push("/validation");
+    }
+
   }
 
   async showValidationPage() {
     await this.login();
   };
 
-  moneyButtonLoginGrant = () => {
-    client.requestAuthorization(
-      "auth.user_identity:read users.profiles:read",
-      "http://localhost:3006/signin"
-    );
-  };
 
   render() {
     var continueButton,
@@ -193,8 +197,8 @@ class SignInContainer extends PureComponent {
           break;
       }
     }
-
-    if (this.state.haveGrant) {
+    console.log(this.state.isMbUserStored)
+    if (this.state.isMbUserStored) {
       return (
         <div className="block">
           <Layout>
@@ -258,12 +262,14 @@ const mapStateToProps = ({ auth }) => ({
   user: auth.user
 });
 const mapDisptachToProps = dispatch => {
-  const { login, genToken } = authActionCreators;
+  const { login, genToken, clearMbUser } = authActionCreators;
+
 
   return bindActionCreators(
     {
       login,
-      genToken
+      genToken,
+      clearMbUser
     },
     dispatch
   );

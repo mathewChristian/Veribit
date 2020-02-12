@@ -1,5 +1,7 @@
 const auth = {
-  user: {}
+  user: {},
+  userId: '',
+  email: ''
 };
 
 const submission = {

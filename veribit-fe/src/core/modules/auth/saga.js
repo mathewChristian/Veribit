@@ -8,8 +8,9 @@ import {
   IDENTITY_UPDATE_REQUEST,
   SELFIE_UPDATE_REQUEST,
   FUND_WALLET_INITIATE_REQUEST,
-  PREPARE_UTXOs_REQUEST
-
+  PREPARE_UTXOs_REQUEST,
+  MB_USER_REQUEST,
+  MB_USER_CLEAR_REQUEST
 } from './actions';
 
 import { KycService, ChainMediaFundWallet, PrepareUTXOs, BroadCastTXN } from '../../../services';
@@ -178,10 +179,40 @@ export function* asyncPrepareUTXOs({ payload, resolve, reject }) {
         method: 'POST',
       });
     if (response.status === 200) {
-      yield put(authActionCreators.prepareUTXOsSuccess({ profile: response.data}));
+      yield put(authActionCreators.prepareUTXOsSuccess({ profile: response.data }));
       resolve(response.data);
     } else {
       reject(response.message);
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
+export function* asyncMbUserRequest({ payload, resolve, reject }) {
+  const userId = payload.userId;
+  const email = payload.email;
+  try {
+    if (email) {
+      yield put(authActionCreators.getMbUserSuccess({ userId: userId, email: email }));
+      resolve({ userId: userId, email: email });
+    } else {
+      reject("Money Button User could not me retrieved");
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
+export function* asyncMbUserClearRequest({ payload, resolve, reject }) {
+  const userId = payload.userId;
+  const email = payload.email;
+  try {
+    if (email) {
+      yield put(authActionCreators.clearMbUserSuccess({ userId: userId, email: email }));
+      resolve({ userId: userId, email: email });
+    } else {
+      reject("Money Button User could not me cleared");
     }
   } catch (e) {
     reject(e);
@@ -244,8 +275,22 @@ export function* watchBroadCastTXN() {
   }
 }
 
+export function* watchMbUserRequest() {
+  while (true) {
+    const action = yield take(MB_USER_REQUEST);
+    yield* asyncMbUserRequest(action);
+  }
+}
+
+export function* watchMbUserClearRequest() {
+  while (true) {
+    const action = yield take(MB_USER_CLEAR_REQUEST);
+    yield* asyncMbUserClearRequest(action);
+  }
+}
+
 export default function* () {
-  
+
   yield all([
     fork(watchLoginRequest),
     fork(watchGenTokenRequest),
@@ -254,6 +299,8 @@ export default function* () {
     fork(watchSelfieUpdateRequest),
     fork(watchFundWalletinitiate),
     fork(watchPrepareUTXOs),
-    fork(watchBroadCastTXN)
+    fork(watchBroadCastTXN),
+    fork(watchMbUserRequest),
+    fork(watchMbUserClearRequest),
   ]);
 }
