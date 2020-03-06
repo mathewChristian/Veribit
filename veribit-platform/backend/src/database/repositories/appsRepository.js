@@ -1,29 +1,29 @@
 const MongooseRepository = require('./mongooseRepository');
 const MongooseQueryUtils = require('../utils/mongooseQueryUtils');
 const AuditLogRepository = require('./auditLogRepository');
-const Media = require('../models/media');
+const Apps = require('../models/apps');
 
 /**
- * Handles database operations for the Media.
+ * Handles database operations for the Apps.
  * See https://mongoosejs.com/docs/index.html to learn how to customize it.
  */
-class MediaRepository {
+class AppsRepository {
   /**
-   * Creates the Media.
+   * Creates the Apps.
    *
    * @param {Object} data
    * @param {Object} [options]
    */
   async create(data, options) {
     if (MongooseRepository.getSession(options)) {
-      await Media.createCollection();
+      await Apps.createCollection();
     }
 
     const currentUser = MongooseRepository.getCurrentUser(
       options,
     );
 
-    const [record] = await Media.create(
+    const [record] = await Apps.create(
       [
         {
           ...data,
@@ -47,14 +47,14 @@ class MediaRepository {
   }
 
   /**
-   * Updates the Media.
+   * Updates the Apps.
    *
    * @param {Object} data
    * @param {Object} [options]
    */
   async update(id, data, options) {
     await MongooseRepository.wrapWithSessionIfExists(
-      Media.updateOne(
+      Apps.updateOne(
         { _id: id },
         {
           ...data,
@@ -81,14 +81,14 @@ class MediaRepository {
   }
 
   /**
-   * Deletes the Media.
+   * Deletes the Apps.
    *
    * @param {string} id
    * @param {Object} [options]
    */
   async destroy(id, options) {
     await MongooseRepository.wrapWithSessionIfExists(
-      Media.deleteOne({ _id: id }),
+      Apps.deleteOne({ _id: id }),
       options,
     );
 
@@ -103,33 +103,33 @@ class MediaRepository {
   }
 
   /**
-   * Counts the number of Medias based on the filter.
+   * Counts the number of Appss based on the filter.
    *
    * @param {Object} filter
    * @param {Object} [options]
    */
   async count(filter, options) {
     return MongooseRepository.wrapWithSessionIfExists(
-      Media.countDocuments(filter),
+      Apps.countDocuments(filter),
       options,
     );
   }
 
   /**
-   * Finds the Media and its relations.
+   * Finds the Apps and its relations.
    *
    * @param {string} id
    * @param {Object} [options]
    */
   async findById(id, options) {
     return MongooseRepository.wrapWithSessionIfExists(
-      Media.findById(id),
+      Apps.findById(id),
       options,
     );
   }
 
   /**
-   * Finds the Medias based on the query.
+   * Finds the Appss based on the query.
    * See https://mongoosejs.com/docs/queries.html to learn how
    * to customize the queries.
    *
@@ -160,24 +160,132 @@ class MediaRepository {
         };
       }
 
-      if (filter.txid) {
+      if (filter.novi) {
         criteria = {
           ...criteria,
-          txid: {
+          novi: {
             $regex: MongooseQueryUtils.escapeRegExp(
-              filter.txid,
+              filter.novi,
             ),
             $options: 'i',
           },
         };
       }
 
-      if (filter.description) {
+      if (filter.levo) {
         criteria = {
           ...criteria,
-          description: {
+          levo: {
             $regex: MongooseQueryUtils.escapeRegExp(
-              filter.description,
+              filter.levo,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.nosco) {
+        criteria = {
+          ...criteria,
+          nosco: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.nosco,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.scio) {
+        criteria = {
+          ...criteria,
+          scio: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.scio,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.disco) {
+        criteria = {
+          ...criteria,
+          disco: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.disco,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.indicium) {
+        criteria = {
+          ...criteria,
+          indicium: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.indicium,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.specto) {
+        criteria = {
+          ...criteria,
+          specto: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.specto,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.intelligo) {
+        criteria = {
+          ...criteria,
+          intelligo: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.intelligo,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.teneo) {
+        criteria = {
+          ...criteria,
+          teneo: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.teneo,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.percipio) {
+        criteria = {
+          ...criteria,
+          percipio: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.percipio,
+            ),
+            $options: 'i',
+          },
+        };
+      }
+
+      if (filter.antikythera) {
+        criteria = {
+          ...criteria,
+          antikythera: {
+            $regex: MongooseQueryUtils.escapeRegExp(
+              filter.antikythera,
             ),
             $options: 'i',
           },
@@ -216,18 +324,18 @@ class MediaRepository {
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
 
-    const rows = await Media.find(criteria)
+    const rows = await Apps.find(criteria)
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort);
 
-    const count = await Media.countDocuments(criteria);
+    const count = await Apps.countDocuments(criteria);
 
     return { rows, count };
   }
 
   /**
-   * Lists the Medias to populate the autocomplete.
+   * Lists the Appss to populate the autocomplete.
    * See https://mongoosejs.com/docs/queries.html to learn how to
    * customize the query.
    *
@@ -249,7 +357,7 @@ class MediaRepository {
     const sort = MongooseQueryUtils.sort('id_ASC');
     const limitEscaped = Number(limit || 0) || undefined;
 
-    const records = await Media.find(criteria)
+    const records = await Apps.find(criteria)
       .limit(limitEscaped)
       .sort(sort);
 
@@ -270,7 +378,7 @@ class MediaRepository {
   async _createAuditLog(action, id, data, options) {
     await AuditLogRepository.log(
       {
-        entityName: Media.modelName,
+        entityName: Apps.modelName,
         entityId: id,
         action,
         values: data,
@@ -280,4 +388,4 @@ class MediaRepository {
   }
 }
 
-module.exports = MediaRepository;
+module.exports = AppsRepository;
