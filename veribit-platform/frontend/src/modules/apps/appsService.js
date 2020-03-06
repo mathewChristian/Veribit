@@ -1,15 +1,15 @@
 import gql from 'graphql-tag';
 import graphqlClient from 'modules/shared/graphql/graphqlClient';
 
-export default class MediaService {
+export default class AppsService {
   static async update(id, data) {
     const response = await graphqlClient.mutate({
       mutation: gql`
-        mutation MEDIA_UPDATE(
+        mutation APPS_UPDATE(
           $id: String!
-          $data: MediaInput!
+          $data: AppsInput!
         ) {
-          mediaUpdate(id: $id, data: $data) {
+          appsUpdate(id: $id, data: $data) {
             id
           }
         }
@@ -21,14 +21,14 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaUpdate;
+    return response.data.appsUpdate;
   }
 
   static async destroyAll(ids) {
     const response = await graphqlClient.mutate({
       mutation: gql`
-        mutation MEDIA_DESTROY($ids: [String!]!) {
-          mediaDestroy(ids: $ids)
+        mutation APPS_DESTROY($ids: [String!]!) {
+          appsDestroy(ids: $ids)
         }
       `,
 
@@ -37,14 +37,14 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaDestroy;
+    return response.data.appsDestroy;
   }
 
   static async create(data) {
     const response = await graphqlClient.mutate({
       mutation: gql`
-        mutation MEDIA_CREATE($data: MediaInput!) {
-          mediaCreate(data: $data) {
+        mutation APPS_CREATE($data: AppsInput!) {
+          appsCreate(data: $data) {
             id
           }
         }
@@ -55,17 +55,17 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaCreate;
+    return response.data.appsCreate;
   }
 
   static async import(values, importHash) {
     const response = await graphqlClient.mutate({
       mutation: gql`
-        mutation MEDIA_IMPORT(
-          $data: MediaInput!
+        mutation APPS_IMPORT(
+          $data: AppsInput!
           $importHash: String!
         ) {
-          mediaImport(data: $data, importHash: $importHash)
+          appsImport(data: $data, importHash: $importHash)
         }
       `,
 
@@ -75,31 +75,26 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaImport;
+    return response.data.appsImport;
   }
 
   static async find(id) {
     const response = await graphqlClient.query({
       query: gql`
-        query MEDIA_FIND($id: String!) {
-          mediaFind(id: $id) {
+        query APPS_FIND($id: String!) {
+          appsFind(id: $id) {
             id
-            txid
-            files {
-              id
-              name
-              sizeInBytes
-              publicUrl
-              privateUrl
-            }
-            images {
-              id
-              name
-              sizeInBytes
-              publicUrl
-              privateUrl
-            }
-            description
+            novi
+            levo
+            nosco
+            scio
+            disco
+            indicium
+            specto
+            intelligo
+            teneo
+            percipio
+            antikythera
             createdAt
             updatedAt
           }
@@ -111,19 +106,19 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaFind;
+    return response.data.appsFind;
   }
 
   static async list(filter, orderBy, limit, offset) {
     const response = await graphqlClient.query({
       query: gql`
-        query MEDIA_LIST(
-          $filter: MediaFilterInput
-          $orderBy: MediaOrderByEnum
+        query APPS_LIST(
+          $filter: AppsFilterInput
+          $orderBy: AppsOrderByEnum
           $limit: Int
           $offset: Int
         ) {
-          mediaList(
+          appsList(
             filter: $filter
             orderBy: $orderBy
             limit: $limit
@@ -132,22 +127,17 @@ export default class MediaService {
             count
             rows {
               id
-              txid
-              files {
-                id
-                name
-                sizeInBytes
-                publicUrl
-                privateUrl
-              }
-              images {
-                id
-                name
-                sizeInBytes
-                publicUrl
-                privateUrl
-              }
-              description
+              novi
+              levo
+              nosco
+              scio
+              disco
+              indicium
+              specto
+              intelligo
+              teneo
+              percipio
+              antikythera
               updatedAt
               createdAt
             }
@@ -163,17 +153,17 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaList;
+    return response.data.appsList;
   }
 
   static async listAutocomplete(query, limit) {
     const response = await graphqlClient.query({
       query: gql`
-        query MEDIA_AUTOCOMPLETE(
+        query APPS_AUTOCOMPLETE(
           $query: String
           $limit: Int
         ) {
-          mediaAutocomplete(query: $query, limit: $limit) {
+          appsAutocomplete(query: $query, limit: $limit) {
             id
             label
           }
@@ -186,6 +176,6 @@ export default class MediaService {
       },
     });
 
-    return response.data.mediaAutocomplete;
+    return response.data.appsAutocomplete;
   }
 }
