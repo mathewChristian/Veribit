@@ -1,15 +1,11 @@
 {
   "name": "Veribit",
   "version": "0.0.11",
-  "description": "Veribit Backend",
-  "main": "src/app.js",
-  "scripts": {
-    "start": "nodemon src/app.js",
-    "test": "NODE_ENV=test mocha ./src/**/*.spec.js test/**/*.js"
+  "description": "Veribit"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RoyMurphy/Veribit/veribit-be.git"
+    "url": "git+https://github.com/RoyMurphy/Veribit.git"
   },
   "keywords": [
     "veribit",
@@ -26,9 +22,9 @@
   "private": true,
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/RoyMurphy/Veribit/veribit-be/issues"
+    "url": "https://github.com/RoyMurphy/Veribit/issues"
   },
-  "homepage": "https://github.com/RoyMurphy/Veribit/veribit-be#readme",
+  "homepage": "https://github.com/RoyMurphy/Veribit#readme",
   "dependencies": {
     "base64-img": "^1.0.4",
     "bcrypt-nodejs": "^0.0.3",
