@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt-nodejs");
+const bsv = require("bsv");
 // const crypto = require('crypto');
 const mongoose = require("mongoose");
 const constants = require("./constants");
@@ -45,11 +45,11 @@ adminSchema.pre("save", function save(next) {
   if (!user.isModified("password")) {
     return next();
   }
-  return bcrypt.genSalt(10, (err, salt) => {
+  return bsv.genSalt(10, (err, salt) => {
     if (err) {
       return next(err);
     }
-    return bcrypt.hash(user.password, salt, null, (e, hash) => {
+    return bsv.hash(user.password, salt, null, (e, hash) => {
       if (e) {
         return next(e);
       }
@@ -66,7 +66,7 @@ adminSchema.methods.comparePassword = function comparePassword(
   candidatePassword,
   cb
 ) {
-  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+  bsv.compare(candidatePassword, this.password, (err, isMatch) => {
     cb(err, isMatch);
   });
 };
