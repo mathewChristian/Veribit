@@ -19,12 +19,14 @@
     "graphql-iso-date": "3.6.1",
     "graphql-tools": "4.0.6",
     "graphql-type-json": "0.3.0",
+    "helmet": "3.21.2",
+    "install": "^0.13.0",
+    "install-peerdeps": "^2.0.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.15",
     "moment": "2.24.0",
     "mongoose": "5.7.8",
-    "nodemailer": "6.3.1",
-    "helmet": "3.21.2"
+    "nodemailer": "6.3.1"
   },
   "engines": {
     "node": "8"
