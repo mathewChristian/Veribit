@@ -23,7 +23,7 @@
     "install": "^0.13.0",
     "install-peerdeps": "^2.0.2",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "moment": "2.24.0",
     "mongoose": "5.7.8",
     "nodemailer": "6.3.1"
