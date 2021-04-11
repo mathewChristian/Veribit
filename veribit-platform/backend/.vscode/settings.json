@@ -4,5 +4,8 @@
     "titleBar.inactiveForeground": "#000000CC",
     "titleBar.activeBackground": "#eb2568",
     "titleBar.inactiveBackground": "#eb2568CC"
+  },
+  "search.exclude": {
+    "**/dist": true
   }
 }

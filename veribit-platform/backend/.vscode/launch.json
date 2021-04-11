@@ -9,7 +9,9 @@
       "request": "launch",
       "name": "Launch Program",
       "env": { "NODE_ENV": "localhost" },
-      "program": "${workspaceFolder}/server.js"
+      "program": "${workspaceFolder}/src/server.ts",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "typescript"
     }
   ]
 }
