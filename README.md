@@ -1,13 +1,13 @@
 # Veribit
 Metanet Entity Access Management
 
-* This is currently an early Alpha pre-build and is not production ready.
+* This is currently an early Beta pre-build and is not production ready.
 
 ### Build
-Veribit v0.0.12 Alpha
+Veribit v0.1.1 Beta
 
 ### Description
-Veribit is an early-alpha platform that manages entity identity and verification for globally connected Metanet applications on the Bitcoin SV blockchain. Entities include users, products, licences, documents and media, either peer-to-peer, peer-to-machine or machine-to-mahine (P2P, P2M & M2M). This helps users and other entities to track, trace and log interactions such as logins, IoT, logistics, freight, customs, border control, taxation, automata, trusts, deeds, equities, intellectual property, identity, AML, KYC and much, much more. Many regulations that bind financial companies in a KYC ("Know Your Customer" / "Know Your Client") process also apply to all crytocurrency projects. We have a simple utility that can be plugged into any service, application or dashboard via API, subject to those regulations that help collect the necessary user info for compliance.
+Veribit is an early-beta platform that manages entity identity and verification for globally connected Metanet applications on the Bitcoin SV blockchain. Entities include users, products, licences, documents and media, either peer-to-peer, peer-to-machine or machine-to-mahine (P2P, P2M & M2M). This helps users and other entities to track, trace and log interactions such as logins, IoT, logistics, freight, customs, border control, taxation, automata, trusts, deeds, equities, intellectual property, identity, AML, KYC and much, much more. Many regulations that bind financial companies in a KYC ("Know Your Customer" / "Know Your Client") process also apply to all crytocurrency projects. We have a simple utility that can be plugged into any service, application or dashboard via API, subject to those regulations that help collect the necessary user info for compliance.
 
 Veribit is designing a whole suite of supplementary products to support a growing ecosystem of a valued utility data framework to allow the economic incentives of a scalable, immutable public ledger technology to power the next generation of internet, powered by a small-world network of miners. Forming the microservices layers at the periphery, this Mandala network is named 'The Matanet'.
 
