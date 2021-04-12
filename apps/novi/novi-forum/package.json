@@ -1,0 +1,20 @@
+{
+  "name": "novi-forum",
+  "version": "0.1.0",
+  "description": "A minimalist forum app with novi authentication and cookies",
+  "main": "novi.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitcore-message": "^1.0.4",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "nedb": "^1.8.0",
+    "timeago.js": "^4.0.2"
+  }
+}
