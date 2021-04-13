@@ -1,7 +1,7 @@
-# exchange-core
+# Veribit Exchange
 [![][license img]][license]
 
-Exchange-core is an **open source market exchange core** based on 
+Veribit exchange is an **open source market exchange core** based on 
 [LMAX Disruptor](https://github.com/LMAX-Exchange/disruptor), 
 [Eclipse Collections](https://www.eclipse.org/collections/) (ex. Goldman Sachs GS Collections), 
 [Real Logic Agrona](https://github.com/real-logic/agrona),
@@ -9,7 +9,7 @@ Exchange-core is an **open source market exchange core** based on
 [LZ4 Java](https://github.com/lz4/lz4-java),
 and [Adaptive Radix Trees](https://db.in.tum.de/~leis/papers/ART.pdf).
 
-Exchange-core includes:
+Exchange includes:
 - orders matching engine
 - risk control and accounting module
 - disk journaling and snapshots module
@@ -75,12 +75,12 @@ Benchmark configuration:
 ```
 <dependency>
     <groupId>exchange.core</groupId>
-    <artifactId>exchange-core</artifactId>
+    <artifactId>exchange</artifactId>
     <version>0.5.0</version>
 </dependency>
 ```
 
-Alternatively, you can clone this repository and run the [example test](https://github.com/RoyMurphy/Veribit/exchange/exchange-core/tree/master/src/test/java/exchange/tests/examples/ITCoreExample.java).
+Alternatively, you can clone this repository and run the [example test](https://github.com/RoyMurphy/Veribit/exchange/exchange/tree/master/src/test/java/exchange/tests/examples/ITCoreExample.java).
 
 ### Usage examples
 Create and start empty exchange core:
@@ -270,7 +270,7 @@ System.out.println("LTC fees collected: " + totalsReport.get().getFees().get(cur
 - NUMA-aware and CPU layout custom configuration
 
 ### Contributing
-Exchange-core is an open-source project and contributions are welcome!
+This exchange is an open-source project and contributions are welcome!
 
 [license]:LICENSE.txt
 [license img]:https://img.shields.io/badge/License-BSV-blue.svg
