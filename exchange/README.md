@@ -80,7 +80,7 @@ Benchmark configuration:
 </dependency>
 ```
 
-Alternatively, you can clone this repository and run the [example test](https://github.com/RoyMurphy/Veribit/exchange/exchange/tree/master/src/test/java/exchange/tests/examples/ITCoreExample.java).
+Alternatively, you can clone this repository and run the [example test](https://github.com/RoyMurphy/Veribit/exchange/src/test/java/exchange/tests/examples/ITCoreExample.java).
 
 ### Usage examples
 Create and start empty exchange core:
