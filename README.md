@@ -1,10 +1,11 @@
 # Veribit
+[![][license img]][license]
 Metanet Entity Access Management
 
 * This is currently an early Beta pre-build and is not production ready.
 
 ### Build
-Veribit v0.1.2 Beta
+Veribit v0.1.3 Beta
 
 ### Description
 Veribit is an early-beta platform that manages entity identity and verification for globally connected Metanet applications on the Bitcoin SV blockchain. Entities include users, products, licences, documents and media, either peer-to-peer, peer-to-machine or machine-to-mahine (P2P, P2M & M2M). This helps users and other entities to track, trace and log interactions such as logins, IoT, logistics, freight, customs, border control, taxation, automata, trusts, deeds, equities, intellectual property, identity, AML, KYC and much, much more. Many regulations that bind financial companies in a KYC ("Know Your Customer" / "Know Your Client") process also apply to all crytocurrency projects. We have a simple utility that can be plugged into any service, application or dashboard via API, subject to those regulations that help collect the necessary user info for compliance.
@@ -76,3 +77,6 @@ If you're a talented Bitcoin Script Engineer with tons of React experience or a 
 
 ### Usage
 Feel free to fork this repo if you intend on helping out with code improvements. The current MIT license maybe subject to change as we move towards a production ready environment to be hosted completely on-chain.
+
+[license]:LICENSE.txt
+[license img]:https://img.shields.io/badge/License-BSV-blue.svg
