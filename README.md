@@ -1,5 +1,6 @@
 # Veribit
 [![][license img]][license]
+
 Metanet Entity Access Management
 
 * This is currently an early Beta pre-build and is not production ready.
