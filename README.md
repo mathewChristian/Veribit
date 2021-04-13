@@ -79,5 +79,5 @@ If you're a talented Bitcoin Script Engineer with tons of React experience or a 
 ### Usage
 Feel free to fork this repo if you intend on helping out with code improvements. The current MIT license maybe subject to change as we move towards a production ready environment to be hosted completely on-chain.
 
-[license]:LICENSE.txt
+[license]:LICENSE
 [license img]:https://img.shields.io/badge/License-BSV-blue.svg
